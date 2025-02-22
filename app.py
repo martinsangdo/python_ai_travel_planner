@@ -26,17 +26,17 @@ def health():
 #
 @app.route('/post_query_raw_url', methods=['POST'])
 def get_raw_trip_details():
-    if request.form.get('trip_url') is None:
-        return {'result': 'failed', 'message': 'Missing trip url'}
+    if request.form.get('org_url') is None:
+        return {'result': 'failed', 'message': 'Missing org_url'}
     try :
-        rawDetails = custom_query(request.form.get('trip_url'), 
+        rawDetails = custom_query(request.form.get('org_url'), 
                           {'Accept':'*/*', "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"})
         #print(rawDetails['nodes'][1])
         if 'nodes' in rawDetails:
             return rawDetails['nodes'][1]
     except Exception as e:
         print(e)
-    return {'result': 'failed', 'message': 'Cannot get trip details'}
+    return {'result': 'failed', 'message': 'Cannot get raw details'}
 
 #run the server: python3 app.py
 if __name__ == '__main__':
