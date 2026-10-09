@@ -1,5 +1,10 @@
+from dotenv import load_dotenv
 from flask import Flask, request
 import requests
+
+load_dotenv()
+
+from agents import manager_agent
 
 #supportive functions
 def custom_query(get_url, header):
@@ -37,6 +42,19 @@ def get_raw_trip_details():
     except Exception as e:
         print(e)
     return {'result': 'failed', 'message': 'Cannot get raw details'}
+
+#multi-agent planner chatbot: {text, session_id} -> {result: 'OK', text}
+@app.route('/chat', methods=['POST'])
+def chat():
+    body = request.get_json(silent=True) or {}
+    text, session_id = body.get('text'), body.get('session_id')
+    if not isinstance(text, str) or not text.strip() or not isinstance(session_id, str) or not session_id:
+        return {'result': 'failed', 'message': 'Missing text or session_id'}, 400
+    try:
+        return {'result': 'OK', 'text': manager_agent.chat(session_id, text.strip())}
+    except Exception as e:
+        print(e)
+        return {'result': 'failed', 'message': 'Chatbot unavailable'}, 500
 
 #run the server: python3 app.py
 if __name__ == '__main__':
